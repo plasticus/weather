@@ -1,16 +1,48 @@
+from flask import Flask, render_template
+from PIL import Image
 import random
 
+app = Flask(__name__)
+
 # Create lists of weather conditions, temperatures, wind speeds, and wind directions
-conditions = ['Sunny', 'Partly cloudy', 'Mostly cloudy', 'Scattered thunderstorms', 'Isolated showers']
-temperatures = range(25, 32) # Temperature range in Celsius
-wind_speeds = range(5, 15) # Wind speed range in knots
-wind_directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+conditions = ['Sunny', 'Partly sunny', 'Partly cloudy', 'Light showers', 'Showers', 'Thunderstorms']
+temperatures = range(70, 85) # Temperature range in Fahrenheit
+wind_speeds = range(5, 30) # Wind speed range in knots
 
-# Generate a random weather condition, temperature, wind speed, and wind direction
-condition = random.choice(conditions)
-temperature = random.choice(temperatures)
-wind_speed = random.choice(wind_speeds)
-wind_direction = random.choice(wind_directions)
+# Define the path where the weather condition images are stored
+IMAGE_PATH = 'static/images/'
 
-# Print out the results
-print(f"The weather today is {condition} with a temperature of {temperature} degrees Celsius and a wind speed of {wind_speed} knots from the {wind_direction}.")
+@app.route('/')
+def weather():
+    # Generate a random weather condition, temperature, and wind speed
+    condition = random.choice(conditions)
+    temperature = random.choice(temperatures)
+    wind_speed = random.choice(wind_speeds)
+
+    # Open the corresponding image for the weather condition
+    image_file = IMAGE_PATH + condition.lower().replace(' ', '_') + '.png'
+    image = Image.open(image_file)
+
+    # Determine if the weather will change in the evening
+    change_weather = random.choice([True, False])
+
+    if change_weather:
+        # Generate a new random weather condition, temperature, and wind speed
+        new_condition = random.choice(conditions)
+        new_temperature = random.choice(temperatures)
+        new_wind_speed = random.choice(wind_speeds)
+        change_message = f"The weather is expected to change to {new_condition} with a temperature of {new_temperature}F and wind speed of {new_wind_speed} knots ({round(new_wind_speed * 1.15078)} mph) in the evening."
+    else:
+        # Use the current weather conditions for the evening
+        new_condition = condition
+        new_temperature = temperature
+        new_wind_speed = wind_speed
+        change_message = "The weather is expected to remain the same in the evening."
+
+    # Render the HTML template with the weather information and image
+    return render_template('weather.html', condition=condition, temperature=temperature, wind_speed=wind_speed,
+                           new_condition=new_condition, new_temperature=new_temperature, new_wind_speed=new_wind_speed,
+                           change_message=change_message, image=image_file)
+
+if __name__ == '__main__':
+    app.run(debug=True)
