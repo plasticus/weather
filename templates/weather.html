@@ -8,6 +8,8 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            font-family: "Helvetica", sans-serif;
+            text-align: justify;
         }
 
         .weather {
@@ -16,7 +18,7 @@
             justify-content: center;
             align-items: center;
             width: 300px;
-            height: 300px;
+            height: 400px;
             background-color: #f5f5f5;
             border: 2px solid #444444;
             border-radius: 10px;
@@ -53,11 +55,7 @@
             <h1>{{ condition }}</h1>
             <h2>{{ temperature }}&deg;F</h2>
             <p>{{ wind_speed }} knots ({{ wind_speed_mph }} mph)</p>
-            {% if is_same_weather %}
-                <p>Expect the same weather in the evening.</p>
-            {% else %}
-                <p>Expect different weather in the evening.</p>
-            {% endif %}
+            <p>{{change_message}}</p>
         </div>
     </div>
 </body>
